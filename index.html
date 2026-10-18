@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Turunan dengan Pembuktian Limit</title>
+<style>
+:root{--bg:#f1f4f9;--card:#fff;--tx:#1b2433;--mut:#6a7588;--bd:#d9e0ec;--pri:#2457d6;--acc:#e8751a;--ok:#12805c;--err:#c0392b;--step:#eef3ff;--shadow:0 1px 4px rgba(20,40,80,.12)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0d1220;--card:#161d2f;--tx:#e8edf8;--mut:#93a0ba;--bd:#27314a;--pri:#6c9bff;--acc:#ffa04d;--ok:#4cd3a0;--err:#ff7b6b;--step:#1b2540;--shadow:none}}
+:root[data-theme="dark"]{--bg:#0d1220;--card:#161d2f;--tx:#e8edf8;--mut:#93a0ba;--bd:#27314a;--pri:#6c9bff;--acc:#ffa04d;--ok:#4cd3a0;--err:#ff7b6b;--step:#1b2540;--shadow:none}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--tx);font-family:"Segoe UI",system-ui,Roboto,Arial,sans-serif}
+body{display:flex;align-items:center;justify-content:center}
+.app{width:min(100vw,calc(100vh*16/9));aspect-ratio:16/9;font-size:calc(min(100vw,100vh*16/9)/100);display:flex;flex-direction:column;padding:1em 1.2em;gap:.8em;background:var(--bg)}
+header{display:flex;align-items:center;justify-content:space-between;height:3em}
+h1{font-size:1.7em;font-weight:700}
+h1 span{color:var(--pri)}
+.sub{font-size:.95em;color:var(--mut)}
+main{flex:1;min-height:0;display:grid;grid-template-columns:34fr 66fr;gap:1em}
+.col{display:flex;flex-direction:column;gap:1em;min-height:0}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:.9em;box-shadow:var(--shadow);padding:1em 1.1em;display:flex;flex-direction:column;min-height:0}
+.card h2{font-size:1.05em;text-transform:uppercase;letter-spacing:.06em;color:var(--mut);margin-bottom:.6em;font-weight:600;display:flex;justify-content:space-between;align-items:center}
+.row{display:flex;gap:.6em;align-items:center}
+.fx{font-size:1.4em;font-weight:600;color:var(--pri);white-space:nowrap}
+input{flex:1;min-width:0;font-size:1.3em;padding:.45em .6em;border:2px solid var(--bd);border-radius:.55em;background:var(--bg);color:var(--tx);outline:none;font-family:Consolas,monospace}
+input:focus{border-color:var(--pri)}
+button{font-size:1.05em;padding:.5em 1em;border:none;border-radius:.55em;cursor:pointer;font-weight:600;font-family:inherit}
+.b1{background:var(--pri);color:#fff}
+.b2{background:transparent;color:var(--err);border:2px solid var(--err)}
+.chips{display:flex;flex-wrap:wrap;gap:.4em;margin-top:.7em;align-items:center}
+.chips small{color:var(--mut);font-size:.9em}
+.chip{font-size:.9em;padding:.25em .7em;background:var(--step);color:var(--pri);border-radius:2em;font-family:Consolas,monospace;font-weight:500}
+.hint{margin-top:.6em;font-size:.88em;color:var(--mut);line-height:1.4}
+.err{color:var(--err);font-weight:600;margin-top:.5em;font-size:1em;min-height:1.2em}
+#gc{flex:1;min-height:0;position:relative}
+canvas{position:absolute;inset:0;width:100%;height:100%}
+.leg{font-size:.85em;text-transform:none;letter-spacing:0;display:flex;gap:1em}
+.leg i{display:inline-block;width:1.2em;height:.3em;border-radius:2px;margin-right:.35em;vertical-align:middle}
+#stepsBox{flex:1;min-height:0;overflow:hidden;position:relative}
+#steps{display:flex;flex-direction:column;gap:.45em;transform-origin:top left}
+.wrap{flex:1;min-height:0;display:grid;grid-template-columns:13.5em 1fr;gap:1em}
+#idx{list-style:none;display:flex;flex-direction:column;gap:.3em;border-right:1px solid var(--bd);padding-right:.8em;overflow:hidden}
+#idx h3{font-size:.8em;text-transform:uppercase;letter-spacing:.08em;color:var(--mut);margin-bottom:.3em}
+#idx li{display:flex;gap:.55em;align-items:center;font-size:.88em;padding:.4em .5em;border-radius:.55em;cursor:pointer;color:var(--mut);line-height:1.25}
+#idx li span{width:1.7em;height:1.7em;border-radius:50%;background:var(--step);color:var(--pri);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9em;flex:none}
+#idx li.on{background:var(--step);color:var(--tx);font-weight:600}
+#idx li.on span{background:var(--pri);color:#fff}
+.st{display:grid;grid-template-columns:2em 17.5em 1fr;gap:.7em;align-items:center;background:var(--step);border-left:.3em solid var(--pri);border-radius:.6em;padding:.45em .8em;position:relative}
+.st.on{outline:2px solid var(--pri)}
+.st.fin{border-left-color:var(--ok)}
+.no{width:1.8em;height:1.8em;border-radius:50%;background:var(--pri);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;font-size:.95em}
+.st.fin .no{background:var(--ok)}
+.ex b{display:block;font-size:.95em;margin-bottom:.15em}
+.ex ol{list-style:none}
+.ex li{font-size:.82em;color:var(--mut);line-height:1.35;margin-bottom:.1em}
+.ex li i{font-style:normal;color:var(--pri);font-weight:700;margin-right:.4em}
+.m{font-family:"Cambria Math","Times New Roman",serif;font-size:1.2em;line-height:1.45;word-break:break-word}
+.m sup{font-size:.65em}
+.cut{text-decoration:line-through;color:var(--err)}
+.fr{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.25;margin:0 .2em}
+.fr>span:first-child{border-bottom:.07em solid currentColor;padding:0 .3em .05em}
+.fr>span:last-child{padding:.05em .3em 0}
+.lim{display:inline-flex;flex-direction:column;vertical-align:middle;text-align:center;line-height:1.1;margin-right:.25em}
+.lim small{font-size:.65em}
+.empty{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;color:var(--mut);font-size:1.2em;line-height:1.6}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div><h1>Turunan Fungsi dengan <span>Pembuktian Limit</span></h1>
+    <div class="sub" style="margin-top:.2em">f′(x) = <span class="lim">lim<small>h→0</small></span> <span class="fr"><span>f(x+h) − f(x)</span><span>h</span></span></div></div>
+  </header>
+  <main>
+    <div class="col">
+      <section class="card">
+        <h2>Input Fungsi</h2>
+        <div class="row"><span class="fx">f(x) =</span><input id="inp" placeholder="contoh: 3x^2 - 5x + 2" autocomplete="off" spellcheck="false"></div>
+        <div class="row" style="margin-top:.7em"><button class="b1" id="go">Hitung Turunan</button><button class="b2" id="rs">Reset</button></div>
+        <div class="chips"><small>Contoh:</small>
+          <span class="chip" role="button">x^2</span><span class="chip" role="button">x^3 - 2x</span><span class="chip" role="button">3x^2 - 5x + 2</span><span class="chip" role="button">(x+1)^2</span><span class="chip" role="button">-x^4 + 4x</span></div>
+        <div class="hint">Mendukung polinomial: <b>+ − × ^</b>, tanda kurung, dan perkalian tersirat (3x, 2(x+1)). Pangkat berupa bilangan bulat ≥ 0.</div>
+        <div class="err" id="err"></div>
+      </section>
+      <section class="card" style="flex:1">
+        <h2>Grafik <span class="leg"><span><i style="background:var(--pri)"></i>f(x)</span><span><i style="background:var(--acc)"></i>f′(x)</span></span></h2>
+        <div id="gc"><canvas id="cv"></canvas></div>
+      </section>
+    </div>
+    <section class="card">
+      <h2>Penjabaran Pembuktian (Definisi Limit) <span class="leg">Klik indeks untuk menyorot langkah</span></h2>
+      <div class="wrap"><ul id="idx"></ul><div id="stepsBox"><div id="steps"></div></div></div>
+    </section>
+  </main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const inp=$('inp'),stepsEl=$('steps'),box=$('stepsBox'),errEl=$('err'),cv=$('cv');
+let cur=null; // {p, d}
+
+/* ---------- Polinomial (array koefisien, indeks = pangkat) ---------- */
+const trim=a=>{while(a.length>1&&Math.abs(a[a.length-1])<1e-12)a.pop();return a};
+const add=(a,b)=>{const r=Array(Math.max(a.length,b.length)).fill(0);a.forEach((v,i)=>r[i]+=v);b.forEach((v,i)=>r[i]+=v);return trim(r)};
+const neg=a=>a.map(v=>-v);
+const mul=(a,b)=>{const r=Array(a.length+b.length-1).fill(0);a.forEach((u,i)=>b.forEach((v,j)=>r[i+j]+=u*v));return trim(r)};
+const pw=(a,n)=>{let r=[1];for(let i=0;i<n;i++)r=mul(r,a);return r};
+
+function parse(s){
+  s=s.replace(/\s+/g,'').replace(/[−–]/g,'-').replace(/×|·/g,'*').replace(/\*\*/g,'^').replace(/X/g,'x');
+  if(!s)throw new Error('Fungsi kosong.');
+  let i=0;
+  const peek=()=>s[i];
+  function expr(){let v=term();while(peek()==='+'||peek()==='-'){const o=s[i++];const t=term();v=o==='+'?add(v,t):add(v,neg(t))}return v}
+  function term(){let v=unary();while(i<s.length&&(peek()==='*'||peek()==='x'||peek()==='('||/[0-9.]/.test(peek()))){if(peek()==='*')i++;v=mul(v,unary())}return v}
+  function unary(){if(peek()==='-'){i++;return neg(unary())}if(peek()==='+'){i++;return unary()}return power()}
+  function power(){let b=atom();if(peek()==='^'){i++;let sg=1;if(peek()==='-'){throw new Error('Pangkat harus bilangan bulat ≥ 0.')}
+      let m=/^\d+/.exec(s.slice(i));if(!m)throw new Error('Pangkat harus bilangan bulat ≥ 0.');i+=m[0].length;
+      const n=+m[0];if(n>12)throw new Error('Pangkat maksimal 12.');b=pw(b,n)}return b}
+  function atom(){
+    if(peek()==='('){i++;const v=expr();if(peek()!==')')throw new Error('Kurung tutup ")" tidak ditemukan.');i++;return v}
+    if(peek()==='x'){i++;return [0,1]}
+    const m=/^(\d+\.?\d*|\.\d+)/.exec(s.slice(i));
+    if(m){i+=m[0].length;return [parseFloat(m[0])]}
+    throw new Error('Karakter tidak dikenali: "'+(s[i]||'akhir')+'"');
+  }
+  const r=expr();
+  if(i<s.length)throw new Error('Karakter tidak dikenali: "'+s[i]+'"');
+  return r;
+}
+const ev=(p,x)=>p.reduceRight((a,c)=>a*x+c,0);
+const deriv=p=>p.length<2?[0]:trim(p.slice(1).map((c,i)=>c*(i+1)));
+
+/* ---------- Format ---------- */
+const num=n=>{let r=Math.round(Math.abs(n)*1e6)/1e6;return String(r)};
+const sup=n=>n>1?'<sup>'+n+'</sup>':'';
+const frac=(n,d)=>'<span class="fr"><span>'+n+'</span><span>'+d+'</span></span>';
+const LIM='<span class="lim">lim<small>h→0</small></span>';
+const vars=(xp,hp)=>(xp>0?'x'+sup(xp):'')+(hp>0?'h'+sup(hp):'');
+// items: [koef, htmlVariabel(boleh ''), tanpaVar?]
+function join(items){
+  if(!items.length)return '0';
+  return items.map(([c,body],k)=>{
+    const a=Math.abs(c);const cs=(a===1&&body)?'':num(c);
+    const sg=k===0?(c<0?'−':''):(c<0?' − ':' + ');
+    return sg+cs+body;
+  }).join('');
+}
+// polinomial dua variabel [c,xp,hp]
+const fmt2=ts=>join(ts.slice().sort((a,b)=>b[1]-a[1]||a[2]-b[2]).map(([c,xp,hp])=>[c,vars(xp,hp)]));
+const fmt1=p=>fmt2(p.map((c,n)=>[c,n,0]).filter(t=>Math.abs(t[0])>1e-12));
+const C=(n,k)=>{let r=1;for(let i=1;i<=k;i++)r=r*(n-k+i)/i;return Math.round(r)};
+
+/* ---------- Penjabaran ---------- */
+function build(p){
+  const terms=p.map((c,n)=>[c,n]).filter(t=>Math.abs(t[0])>1e-12);
+  if(!terms.length)terms.push([0,0]);
+  // f(x+h) dengan substitusi
+  const subs=join(terms.map(([c,n])=>[c,n===0?'':n===1?'(x + h)':'(x + h)'+sup(n)]).map(([c,b],i)=>[c,b]));
+  const subsStr=terms.length===1&&terms[0][1]===0?num(terms[0][0]):subs;
+  // ekspansi binomial
+  let all=[];
+  terms.forEach(([c,n])=>{for(let k=0;k<=n;k++)all.push([c*C(n,k),n-k,k])});
+  const expanded=all.filter(t=>Math.abs(t[0])>1e-12);
+  const withH=expanded.filter(t=>t[2]>=1);
+  const noH=expanded.filter(t=>t[2]===0);
+  const diffTerms=withH;
+  const divided=withH.map(([c,xp,hp])=>[c,xp,hp-1]);
+  const lim=withH.filter(t=>t[2]===1).map(([c,xp])=>[c,xp,0]);
+  const dead=withH.filter(t=>t[2]>=2).map(([c,xp,hp])=>[c,xp,hp-1]);
+  const fp=deriv(p);
+  const crossed=noH.length?fmt2(noH):'0';
+  const limStr=lim.length?fmt2(lim):'0';
+  const factored=withH.length?'h·('+fmt2(divided)+')':'0';
+  const S=[];
+  S.push({t:'Definisi turunan',pts:['Turunan = kemiringan garis singgung kurva di titik x.','Diperoleh dari kemiringan garis sekan, lalu jarak h dibuat menuju 0.'],m:'f′(x) = '+LIM+frac('f(x+h) − f(x)','h')});
+  S.push({t:'Fungsi yang diberikan',pts:['Sederhanakan fungsi menjadi polinomial bentuk standar.'],m:'f(x) = '+fmt1(p)});
+  S.push({t:'Substitusi x → (x + h)',pts:['Ganti setiap x pada f(x) dengan (x + h).','Hasilnya adalah f(x+h).'],m:'f(x+h) = '+subsStr});
+  S.push({t:'Jabarkan dengan binomial',pts:['Gunakan (x+h)<sup>n</sup> = Σ C(n,k)·x<sup>n−k</sup>·h<sup>k</sup>.','Kumpulkan suku, urutkan dari pangkat x terbesar.'],m:'f(x+h) = '+fmt2(expanded)});
+  S.push({t:'Hitung f(x+h) − f(x)',pts:['Kurangkan f(x) dari f(x+h).','Suku tanpa h (<span class="cut">'+crossed+'</span>) sama dengan f(x), sehingga habis.'],m:'f(x+h) − f(x) = '+(diffTerms.length?fmt2(diffTerms):'0')});
+  S.push({t:'Faktorkan h, bagi dengan h',pts:['Semua suku tersisa memuat h, faktorkan h.','Bagi dengan h pada penyebut, lalu coret.'],m:diffTerms.length?frac('f(x+h) − f(x)','h')+' = '+frac(fmt2(diffTerms),'h')+'<br>= '+frac(factored,'h')+' = '+fmt2(divided):frac('f(x+h) − f(x)','h')+' = 0'});
+  S.push({t:'Ambil limit h → 0',pts:[dead.length?'Suku yang masih memuat h menuju 0 saat h → 0.':'Tidak ada suku yang memuat h.','Suku yang tersisa menjadi hasil limit.'],m:'f′(x) = '+LIM+'('+fmt2(divided)+') = '+limStr});
+  S.push({t:'Hasil akhir',fin:1,pts:['Turunan fungsi hasil pembuktian limit.','Sama dengan hasil aturan pangkat: (a·xⁿ)′ = n·a·xⁿ⁻¹.'],m:'f′(x) = '+fmt1(fp)});
+  return S;
+}
+function render(){
+  const v=inp.value.trim();
+  errEl.textContent='';
+  if(!v){clearAll();return}
+  try{
+    const p=parse(v);
+    cur={p,d:deriv(p)};
+    stepsEl.innerHTML=build(p).map((s,i)=>`<div class="st ${s.fin?'fin':''}" id="s${i}"><div class="no">${i+1}</div><div class="ex"><b>${s.t}</b><ol>${s.pts.map((t,j)=>`<li><i>${i+1}.${j+1}</i>${t}</li>`).join('')}</ol></div><div class="m">${s.m}</div></div>`).join('');
+    sel(-1);
+    fit();draw();
+  }catch(e){errEl.textContent='⚠ '+e.message}
+}
+function clearAll(){
+  cur=null;
+  stepsEl.style.transform='';stepsEl.style.width='';
+  sel(-1);
+  stepsEl.innerHTML='<div class="empty" style="height:30em">Masukkan fungsi pada kolom input,<br>lalu penjabaran turunan dengan limit<br>akan muncul tahap demi tahap di sini.</div>';
+  draw();
+}
+const TITLES=['Definisi turunan','Fungsi yang diberikan','Substitusi x → (x + h)','Jabarkan dengan binomial','Hitung f(x+h) − f(x)','Faktorkan h, bagi dengan h','Ambil limit h → 0','Hasil akhir'];
+const idxEl=$('idx');
+idxEl.innerHTML='<h3>Indeks Langkah</h3>'+TITLES.map((t,i)=>`<li data-i="${i}"><span>${i+1}</span>${t}</li>`).join('');
+function sel(i){
+  idxEl.querySelectorAll('li').forEach(l=>l.classList.toggle('on',+l.dataset.i===i));
+  stepsEl.querySelectorAll('.st').forEach((e,k)=>e.classList.toggle('on',k===i));
+}
+idxEl.addEventListener('click',e=>{const l=e.target.closest('li');if(l&&cur)sel(+l.dataset.i)});
+function fit(){ // skala otomatis agar tanpa scroll
+  const H=box.clientHeight;let sc=1;
+  for(let k=0;k<20;k++){
+    stepsEl.style.width=(100/sc)+'%';stepsEl.style.transform=sc<1?'scale('+sc+')':'';
+    if(stepsEl.offsetHeight*sc<=H||sc<=.3)break;
+    sc*=.94;
+  }
+}
+
+/* ---------- Grafik ---------- */
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const nice=r=>{const p=Math.pow(10,Math.floor(Math.log10(r))),m=r/p;return(m<1.5?1:m<3.5?2:m<7.5?5:10)*p};
+function draw(){
+  const dpr=window.devicePixelRatio||1,W=cv.clientWidth,H=cv.clientHeight;
+  cv.width=W*dpr;cv.height=H*dpr;
+  const g=cv.getContext('2d');g.setTransform(dpr,0,0,dpr,0,0);g.clearRect(0,0,W,H);
+  const fs=Math.max(10,W/32);g.font=fs+'px sans-serif';
+  if(!cur){g.fillStyle=css('--mut');g.textAlign='center';g.fillText('Grafik akan muncul di sini',W/2,H/2);return}
+  const x0=-6,x1=6,N=400;let ymin=Infinity,ymax=-Infinity;
+  for(let i=0;i<=N;i++){const x=x0+(x1-x0)*i/N;[ev(cur.p,x),ev(cur.d,x)].forEach(y=>{ymin=Math.min(ymin,y);ymax=Math.max(ymax,y)})}
+  ymin=Math.min(ymin,-1);ymax=Math.max(ymax,1);
+  const pad=(ymax-ymin)*.06;ymin-=pad;ymax+=pad;
+  const mx=x=>(x-x0)/(x1-x0)*W,my=y=>H-(y-ymin)/(ymax-ymin)*H;
+  g.lineWidth=1;g.textAlign='center';
+  const sx=nice((x1-x0)/8),sy=nice((ymax-ymin)/6);
+  g.strokeStyle=css('--bd');g.fillStyle=css('--mut');
+  const ay=Math.min(Math.max(my(0),0),H),ax=Math.min(Math.max(mx(0),0),W);
+  for(let x=Math.ceil(x0/sx)*sx;x<=x1;x+=sx){g.beginPath();g.moveTo(mx(x),0);g.lineTo(mx(x),H);g.stroke();if(Math.abs(x)>1e-9){g.textAlign='center';g.fillText(+x.toFixed(6),mx(x),Math.min(ay+fs+2,H-3))}}
+  for(let y=Math.ceil(ymin/sy)*sy;y<=ymax;y+=sy){g.beginPath();g.moveTo(0,my(y));g.lineTo(W,my(y));g.stroke();if(Math.abs(y)>1e-9){g.textAlign='left';g.fillText(+y.toFixed(6),Math.min(ax+4,W-fs*3),my(y)-3)}}
+  g.strokeStyle=css('--tx');g.lineWidth=1.5;
+  g.beginPath();g.moveTo(0,my(0));g.lineTo(W,my(0));g.moveTo(mx(0),0);g.lineTo(mx(0),H);g.stroke();
+  const plot=(p,col,dash)=>{g.strokeStyle=col;g.lineWidth=2.6;g.setLineDash(dash);g.beginPath();
+    for(let i=0;i<=N;i++){const x=x0+(x1-x0)*i/N,y=ev(p,x);i?g.lineTo(mx(x),my(y)):g.moveTo(mx(x),my(y))}g.stroke();g.setLineDash([])};
+  plot(cur.d,css('--acc'),[7,5]);plot(cur.p,css('--pri'),[]);
+}
+
+/* ---------- Event ---------- */
+inp.addEventListener('input',render);
+inp.addEventListener('keydown',e=>{if(e.key==='Enter')render()});
+$('go').onclick=render;
+$('rs').onclick=()=>{inp.value='';errEl.textContent='';clearAll();inp.focus()};
+document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{inp.value=c.textContent;render()});
+addEventListener('resize',()=>{cur?fit():0;draw()});
+clearAll();
+</script>
+</body>
+</html>
